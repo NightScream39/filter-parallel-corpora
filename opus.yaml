@@ -1,0 +1,160 @@
+common:
+  default_n_jobs: 6 #  Correct this parameter  according to the number of processor cores
+  output_directory: opus_work
+
+steps:
+
+#1: Filter Dataset
+    - type: filter
+      parameters:
+        src_input: WikiMatrix.en-ru.en
+        tgt_input: WikiMatrix.en-ru.ru
+        src_output: WikiMatrix-filtered.en-ru.en
+        tgt_output: WikiMatrix-filtered.en-ru.ru
+#        If u want to create files with deleted sentences, uncomment the line below
+#        filterfalse: true
+        filters:
+          - LengthFilter:
+              unit: word
+              min_length: 3
+              max_length: 100
+
+          - LengthRatioFilter:
+              unit: word
+              threshold: 2.5
+
+          - LongWordFilter:
+              threshold: 40
+
+          - HtmlTagFilter: {}
+
+          - TerminalPunctuationFilter: {}
+
+          - CharacterScoreFilter:
+              src_script: Latin
+              tgt_script: Cyrillic
+              src_threshold: 0.85
+              tgt_threshold: 0.85
+
+          - NonAlphaFilter:
+              threshold: 0.25
+            module: customfilter
+
+
+
+
+#1: Train N-gram
+#    - type: train_ngram
+#      parameters:
+#        data: WikiMatrix-filtered.en-ru.en
+#        parameters:
+#          norder: 15
+#          dscale: 0.1
+#        model: en.arpa.gz
+##2:
+#    - type: train_ngram
+#      parameters:
+#        data: WikiMatrix-filtered.en-ru.ru
+#        parameters:
+#          norder: 15
+#          dscale: 0.1
+#        model: ru.arpa.gz
+#
+##3: Train aligment:
+#    - type: train_alignment
+#      parameters:
+#        src_data: WikiMatrix-filtered.en-ru.en
+#        tgt_data: WikiMatrix-filtered.en-ru.ru
+#        parameters:
+#          src_tokenizer: [moses, en]
+#          tgt_tokenizer: [moses, ru]
+#          model: 3
+#        output: align.priors
+
+#    - type: train_nearest_neighbors
+#      parameters:
+#        src_input: WikiMatrix-filtered.en-ru.en
+#        tgt_input: WikiMatrix-filtered.en-ru.en
+#        languages: [en, ru]
+#        output: nearest-neibghors.gz
+
+
+
+
+#    - type: filter
+#      parameters:
+#        src_input: WikiMatrix-filtered.en-ru.en
+#        tgt_input: WikiMatrix-filtered.en-ru.ru
+#        src_output: WikiMatrix-filtered2.en-ru.en
+#        tgt_output: WikiMatrix-filtered2.en-ru.ru
+#        filters:
+#          - WordAlignFilter:
+#              src_tokenizer: [ moses, en ]
+#              tgt_tokenizer: [ moses, ru ]
+#              model: 3
+#              priors: align.priors
+
+
+
+
+#
+#    - type: concatenate
+#      parameters:
+#        inputs:
+#          - WikiMatrix.en-ru.en
+#          - WikiMatrix.en-ru.ru
+#        output: concatenated-WM-en-ru.gz
+#
+#    - type: train_ngram
+#      parameters:
+#        data: concatenated-WM-en-ru.gz
+#        parameters:
+#          norder: 10
+#          dscale: 0.1
+#        model: bg.arpa.gz
+#
+#    - type: score
+#      parameters:
+#        src_input: WikiMatrix-filtered.en-ru.en
+#        tgt_input: WikiMatrix-filtered.en-ru.ru
+#        output: WikiMatrix-scores.en-ru.jsonl.gz
+#        filters: &scorefilt
+#          - LengthFilter:
+#              name: char
+#              unit: char
+#
+#          - LengthFilter:
+#              name: word
+#              unit: word
+#
+#          - LengthRatioFilter:
+#              name: char
+#              unit: char
+#
+#          - LengthRatioFilter:
+#              name: word
+#              unit: word
+#
+#          - LongWordFilter: {}
+#
+#          - CharacterScoreFilter:
+#              src_script: Latin
+#              tgt_script: Cyrillic
+#              src_threshold: 0.8
+#              tgt_threshold: 0.8
+#
+#          - LanguageIDFilter:
+#              name: langid
+#              id_method: langid
+#              src_lang: en
+#              tgt_lang: ru
+#
+#          - TerminalPunctuationFilter: {}
+#
+#          - NonZeroNumeralsFilter: {}
+#
+#          - WordAlignFilter:
+#              src_tokenizer: [moses, en]
+#              tgt_tokenizer: [moses, ru]
+#              model: 3
+#              priors: align.priors

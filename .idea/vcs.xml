@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/eflomal" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/eflomal21" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fast-mosestokenizer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fast-mosestokenizer21" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/laserembeddings" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/variKN" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/varikn" vcs="Git" />
+  </component>
+</project>
