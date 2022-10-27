@@ -56,11 +56,11 @@ def laser_filtered_sentences():
     print(type(df2['Eng sent']))
     numpyarr_eng = df2['Eng sent'].to_numpy()
     numpyarr_ru = df2['Ru sent'].to_numpy()
-    with open('dataset/WikiMatrix-filteredbyLASER.en-ru.en', "w") as en:
+    with open('datasets/WikiMatrix-filteredbyLASER.en-ru.en', "w") as en:
         for sent in numpyarr_eng:
             en.write(sent + '\n')
 
-    with open('dataset/WikiMatrix-filteredbyLASER.en-ru.ru', "w") as ru:
+    with open('datasets/WikiMatrix-filteredbyLASER.en-ru.ru', "w") as ru:
         for sent in numpyarr_ru:
             ru.write(sent + '\n')
 
@@ -72,11 +72,11 @@ def laser_filtered_drop_sentences():
     print(type(df3['Eng sent']))
     numpyarray_en = df3['Eng sent'].to_numpy()
     numpyarray_ru = df3['Ru sent'].to_numpy()
-    with open('dataset/WikiMatrix-filteredDROPbyLASER.en-ru.en', "w") as en:
+    with open('datasets/WikiMatrix-filteredDROPbyLASER.en-ru.en', "w") as en:
         for sent in numpyarray_en:
             en.write(sent + '\n')
 
-    with open('dataset/WikiMatrix-filteredDROPbyLASER.en-ru.ru', "w") as ru:
+    with open('datasets/WikiMatrix-filteredDROPbyLASER.en-ru.ru', "w") as ru:
         for sent in numpyarray_ru:
             ru.write(sent + '\n')
 

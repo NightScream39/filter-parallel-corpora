@@ -1,6 +1,6 @@
 common:
   default_n_jobs: 6 #  Correct this parameter  according to the number of processor cores
-  output_directory: dataset
+  output_directory: datasets
 
 steps:
 
