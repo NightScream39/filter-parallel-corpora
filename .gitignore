@@ -5,3 +5,5 @@ variKN
 venv
 Dataset.zip
 df.csv
+.idea
+__pycache__
