@@ -1,0 +1,131 @@
+common:
+  default_n_jobs: 6 #  Correct this parameter  according to the number of processor cores
+  output_directory: datasets
+
+steps:
+#1
+    - type: concatenate
+      parameters:
+        inputs:
+        - WikiMatrix.en-ru.en
+        - WikiMatrix.en-ru.ru
+        output: concatenated.gz
+#2
+    - type: train_ngram
+      parameters:
+        data: concatenated.gz
+        parameters:
+          norder: 5
+          dscale: 0.1
+        model: bg.arpa.gz
+
+#3
+    - type: train_ngram
+      parameters:
+        data: WikiMatrix-filtered.en-ru.en
+        parameters:
+          norder: 20
+          dscale: 0.01
+        model: en.arpa.gz
+#4
+    - type: train_ngram
+      parameters:
+        data: WikiMatrix-filtered.en-ru.ru
+        parameters:
+          norder: 20
+          dscale: 0.01
+        model: ru.arpa.gz
+#5
+    - type: train_alignment
+      parameters:
+        src_data: WikiMatrix-filtered.en-ru.en
+        tgt_data: WikiMatrix-filtered.en-ru.ru
+        parameters:
+          src_tokenizer: [ moses, en ]
+          tgt_tokenizer: [ moses, ru ]
+          model: 3
+        output: align.priors
+
+#6: Filter Dataset
+    - type: filter
+      parameters:
+        inputs: [WikiMatrix.en-ru.en, WikiMatrix.en-ru.ru]
+        outputs: [WikiMatrix-filteredDROP.en-ru.en, WikiMatrix-filteredDROP.en-ru.ru]
+#        If u want to create files with deleted sentences, uncomment the line below
+        filterfalse: true
+        filters:
+          - LengthFilter:
+              unit: word
+              min_length: 1
+              max_length: 100
+
+          - LengthRatioFilter:
+              unit: word
+              threshold: 3
+
+          - LongWordFilter:
+              threshold: 40
+
+          - HtmlTagFilter: {}
+
+          - TerminalPunctuationFilter: {}
+
+          - NonZeroNumeralsFilter: {}
+
+          - CharacterScoreFilter:
+              scripts: [Latin, Cyrillic]
+              thresholds: [1, 1]
+
+          - LanguageIDFilter:
+              name: langid
+              id_method: langid
+              languages: [en, ru]
+
+          - NonAlphaFilter:
+              threshold: 0.2
+            module: customfilter
+
+          - UppercaseFilter:
+              threshold: 0.5
+            module: upperCaseFilter
+
+#7
+    - type: score
+      parameters:
+        inputs: [WikiMatrix-filtered.en-ru.en, WikiMatrix-filtered.en-ru.ru]
+        output: WikiMatrix-scores.en-ru.jsonl.gz
+        filters: &scorefilt
+
+          - LengthRatioFilter:
+              name: char
+              unit: char
+
+          - LengthRatioFilter:
+              name: word
+              unit: word
+
+          - LanguageIDFilter:
+              name: langid
+              id_method: langid
+              languages: [en, ru]
+
+          - TerminalPunctuationFilter: {}
+
+          - NonZeroNumeralsFilter: {}
+
+          - CrossEntropyFilter:
+              lm_params:
+                - filename: en.arpa.gz
+                  interpolate:
+                  - [en.arpa.gz, 0.01]
+                  - [bg.arpa.gz, 0.01]
+                - filename: ru.arpa.gz
+                  interpolate:
+                  - [ru.arpa.gz, 0.01]
+                  - [bg.arpa.gz, 0.01]
+                  -
+          - WordAlignFilter:
+              src_tokenizer: [moses, en]
+              tgt_tokenizer: [moses, ru]
+              model: 3
+              priors: align.priors
