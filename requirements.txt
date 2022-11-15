@@ -69,6 +69,7 @@ ruamel.yaml.clib==0.2.7
 sacremoses==0.0.35
 scikit-learn==1.1.2
 scipy==1.9.3
+seaborn==0.12.1
 sentence-splitter==1.4
 six==1.16.0
 soupsieve==2.3.2.post1
