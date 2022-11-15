@@ -5,9 +5,6 @@ from sklearn.linear_model import LogisticRegressionCV
 from sklearn.metrics import confusion_matrix, classification_report
 import data_prepare as data_prepare
 import laser as laser
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 
 
 # Read csv to Pandas dataframe
@@ -87,7 +84,7 @@ def save_sorted_dataframes():
 
 
 def filtered_parallel_corpora():
-    # laser.cosine_similarity_scores()
+    laser.cosine_similarity_scores()
     data_prepare.prepare_csv_for_model()
     save_sorted_dataframes()
 
