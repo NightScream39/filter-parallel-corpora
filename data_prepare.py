@@ -32,9 +32,10 @@ def data_prepare_for_model():
     scores_df.loc[:, 'WAscore'] = pd.DataFrame(wa_score)
 
     scores_df.loc[:, 'CosineSimScore'] = round(full_df.loc[:, 'Cosine similarity'], 3)
+    scores_df.loc[:, 'Label'] = labels_df
     scores_df.loc[:, 'Eng sent'] = full_df.loc[:, 'Eng sent']
     scores_df.loc[:, 'Ru sent'] = full_df.loc[:, 'Ru sent']
-    scores_df.loc[:, 'Label'] = labels_df
+
 
     scores_df.drop(scores_df.columns[[0, 1, 2, 3, 4, 5]], axis=1, inplace=True)
 

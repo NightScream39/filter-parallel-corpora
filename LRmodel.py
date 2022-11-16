@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegressionCV
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.linear_model import LogisticRegression
 import data_prepare as data_prepare
 import laser as laser
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 
 # Read csv to Pandas dataframe
@@ -17,7 +18,7 @@ def read_csv_to_dataframe():
 def prepare_data_for_model_train():
     df_train = read_csv_to_dataframe()
     df_train = df_train.head(300)
-    X = df_train[['CES', 'LRSword', 'LRSchar', 'WAscore', 'CosineSimScore']]
+    X = df_train[['WAscore', 'CosineSimScore']]
     y = df_train['Label']
     return df_train, X, y
 
@@ -25,27 +26,31 @@ def prepare_data_for_model_train():
 def prepare_data_for_predict():
     # Preparing data for model predict
     df = read_csv_to_dataframe()
-    x_full_for_test = df[['CES', 'LRSword', 'LRSchar', 'WAscore', 'CosineSimScore']]
+    x_full_for_test = df[['WAscore', 'CosineSimScore']]
     return x_full_for_test
 
 
 def train_predict_model():
     # Split data into training and test
     X, y = prepare_data_for_model_train()[1:]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=41)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=400)
     # Set weigths for the classes (unbalance classes)
-    w = {0: 7, 1: 1}
+
     # Training LogisticRegression model on labeled data with cross-validation
-    n_folds = 10
-    C_values = [0.001, 0.01, 0.05, 0.1, 1., 100.]
-    lr_cv = LogisticRegressionCV(Cs=C_values, cv=n_folds, penalty='l2',
-                           refit=True, scoring='recall',
-                           solver='liblinear', random_state=40,
-                           fit_intercept=False, class_weight=w).fit(X_train, y_train)
+    lg4 = LogisticRegression(C=5, class_weight={0: 35, 1: 10}, fit_intercept=True, penalty='l2', solver='lbfgs')
+    lg4.fit(X_train, y_train)
+    y300_pred = lg4.predict(X_test)
+
     # Predict labels (good or bad translation) for unlabeled data
     x_full = prepare_data_for_predict()
-    y300_pred = lr_cv.predict(X_test)
-    y_pred = lr_cv.predict(x_full[300:])
+    y_pred = lg4.predict(x_full[300:])
+
+    # Saving png file of confusion matrix by test data
+    cf_matrix = confusion_matrix(y_test, y300_pred)
+    svm = sns.heatmap(cf_matrix, annot=True)
+    print(set(y_test) - set(y300_pred))
+    svm.figure.savefig("cfm.png")
+
     # Union prepared labels with predicted labels
     df_train = prepare_data_for_model_train()[0]
     numpyarray = np.append(df_train['Label'], y_pred)
